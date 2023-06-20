@@ -5,31 +5,97 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mvachera <mvachera@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/01 17:27:02 by mvachera          #+#    #+#             */
-/*   Updated: 2023/06/02 15:48:56 by mvachera         ###   ########.fr       */
+/*   Created: 2023/06/19 18:28:03 by mvachera          #+#    #+#             */
+/*   Updated: 2023/06/20 15:59:50 by mvachera         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strdup(const char *s)
-{
-	char	*dst;
-	int		i;
-	int		j;
+/* Cherche le '\n' dans le noeud envoyer en parametre 
+ * (le dernier de la liste du coup) de la liste chainee.*/
 
+int	found_newline(t_list *stash)
+{
+	int		i;
+	t_list	*last;
+
+	if (stash == NULL)
+		return (0);
 	i = 0;
-	j = 0;
-	while (s[j])
-		j++;
-	dst = (char *)malloc(sizeof(char) * (j + 1));
-	if (!dst)
-		return (NULL);
-	while (s[i] != '\0' && s[i] != '\n')
+	last = get_last_node(stash);
+	while (last->content[i])
 	{
-		dst[i] = s[i];
+		if (last->content[i] == '\n')
+			return (1);
 		i++;
 	}
-	dst[i] = '\0';
-	return (dst);
+	return (0);
+}
+
+// Retourne un pointeur sur le dernier element de la liste chainee.
+
+t_list	*get_last_node(t_list *stash)
+{
+	t_list	*current;
+
+	current = stash;
+	while (current && current->next)
+		current = current->next;
+	return (current);
+}
+
+/* Calcule le nombre de caracteres dans la ligne actuelle.
+ * On inclus aussi le '\n' s'il y en a un et on alloue de la memoire avec 
+ * la taille obtenue.*/
+
+void	len_line(t_list *stash, char **line)
+{
+	int	len;
+	int	i;
+
+	len = 0;
+	while (stash)
+	{
+		i = 0;
+		while (stash->content[i])
+		{
+			if (stash->content[i] == '\n')
+			{
+				len++;
+				break ;
+			}
+			i++;
+			len++;
+		}
+		stash = stash->next;
+	}
+	*line = malloc(sizeof(char) * (len + 1));
+}
+
+/* On libere la stash en entier.*/
+
+void	free_stash(t_list *stash)
+{
+	t_list	*current;
+	t_list	*next;
+
+	current = stash;
+	while (current)
+	{
+		free(current->content);
+		next = current->next;
+		free(current);
+		current = next;
+	}
+}
+
+int	len(const char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }

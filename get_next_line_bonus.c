@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mvachera <mvachera@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/30 18:27:18 by mvachera          #+#    #+#             */
-/*   Updated: 2023/07/12 20:18:24 by mvachera         ###   ########.fr       */
+/*   Created: 2023/08/14 20:22:26 by mvachera          #+#    #+#             */
+/*   Updated: 2023/08/14 20:25:51 by mvachera         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 /*Fonction principale.
 
@@ -25,21 +25,21 @@
 
 char	*get_next_line(int fd)
 {
-	static t_list	*stash = NULL;
+	static t_list	*stash[1024];
 	char			*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = NULL;
-	read_and_stash(fd, &stash);
-	if (!stash)
+	read_and_stash(fd, &stash[fd]);
+	if (!stash[fd])
 		return (NULL);
-	extract_to_line(stash, &line);
-	clean_node(&stash);
+	extract_to_line(stash[fd], &line);
+	clean_node(&stash[fd]);
 	if (line[0] == '\0')
 	{
-		free_stash(stash);
-		stash = NULL;
+		free_stash(stash[fd]);
+		stash[fd] = NULL;
 		free(line);
 		return (NULL);
 	}
